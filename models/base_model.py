@@ -5,7 +5,7 @@ This is the base model for the BNB project
 
 from datetime import datetime
 import models
-from uuid import uuid4
+import uuid
 
 class BaseModel:
     """
@@ -17,11 +17,11 @@ class BaseModel:
         Base class init method
         """
         if kwargs:
-            for arg, val in kwargs.items():
-                val=datetime.strftime(val, '%Y-%m-%dT%H:%M:%S.%f')
+            for arg, value in kwargs.items():
+                val=datetime.strftime(value, '%Y-%m-%dT%H:%M:%S.%f')
 
                 if arg != '__class__':
-                    setattr(self, arg,val)
+                    setattr(self, arg,value)
 
         else:
             self.id = str(uuid.uuid4())
