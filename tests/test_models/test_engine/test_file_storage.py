@@ -1,173 +1,198 @@
 #!/usr/bin/python3
-"""Defines unittests for models/engine/file_storage.py.
-
-Unittest classes:
-    TestFileStorage_instantiation
-    TestFileStorage_methods
+"""Unittest for class FileStorage
 """
-import os
-import json
-import models
 import unittest
-from datetime import datetime
+import models
+from models import storage
 from models.base_model import BaseModel
-from models.engine.file_storage import FileStorage
 from models.user import User
 from models.state import State
-from models.place import Place
 from models.city import City
 from models.amenity import Amenity
+from models.place import Place
 from models.review import Review
+from models.engine.file_storage import FileStorage
 
 
-class TestFileStorage_instantiation(unittest.TestCase):
-    """Unittests for testing instantiation of the FileStorage class."""
-
-    def test_FileStorage_instantiation_no_args(self):
-        self.assertEqual(type(FileStorage()), FileStorage)
-
-    def test_FileStorage_instantiation_with_arg(self):
-        with self.assertRaises(TypeError):
-            FileStorage(None)
-
-    def test_FileStorage_file_path_is_private_str(self):
-        self.assertEqual(str, type(FileStorage._FileStorage__file_path))
-
-    def testFileStorage_objects_is_private_dict(self):
-        self.assertEqual(dict, type(FileStorage._FileStorage__objects))
-
-    def test_storage_initializes(self):
-        self.assertEqual(type(models.storage), FileStorage)
-
-
-class TestFileStorage_methods(unittest.TestCase):
-    """Unittests for testing methods of the FileStorage class."""
-
-    @classmethod
+class TestFileStorage(unittest.TestCase):
+    """Testing FileStorage"""
     def setUp(self):
-        try:
-            os.rename("file.json", "tmp")
-        except IOError:
-            pass
+        """Store __objects in variable for ease of typing and readability"""
+        self.objects = FileStorage._FileStorage__objects
+        self.file_path = FileStorage._FileStorage__file_path
 
-    @classmethod
-    def tearDown(self):
-        try:
-            os.remove("file.json")
-        except IOError:
-            pass
-        try:
-            os.rename("tmp", "file.json")
-        except IOError:
-            pass
-        FileStorage._FileStorage__objects = {}
+    def test_objects(self):
+        """Test type of __objects"""
+        self.assertTrue(isinstance(self.objects, dict))
 
-    def test_all(self):
-        self.assertEqual(dict, type(models.storage.all()))
-
-    def test_all_with_arg(self):
-        with self.assertRaises(TypeError):
-            models.storage.all(None)
+    def test_file_path(self):
+        """Test type of __file_path"""
+        self.assertTrue(isinstance(self.file_path, str))
 
     def test_new(self):
-        bm = BaseModel()
-        us = User()
-        st = State()
-        pl = Place()
-        cy = City()
-        am = Amenity()
-        rv = Review()
-        models.storage.new(bm)
-        models.storage.new(us)
-        models.storage.new(st)
-        models.storage.new(pl)
-        models.storage.new(cy)
-        models.storage.new(am)
-        models.storage.new(rv)
-        self.assertIn("BaseModel." + bm.id, models.storage.all().keys())
-        self.assertIn(bm, models.storage.all().values())
-        self.assertIn("User." + us.id, models.storage.all().keys())
-        self.assertIn(us, models.storage.all().values())
-        self.assertIn("State." + st.id, models.storage.all().keys())
-        self.assertIn(st, models.storage.all().values())
-        self.assertIn("Place." + pl.id, models.storage.all().keys())
-        self.assertIn(pl, models.storage.all().values())
-        self.assertIn("City." + cy.id, models.storage.all().keys())
-        self.assertIn(cy, models.storage.all().values())
-        self.assertIn("Amenity." + am.id, models.storage.all().keys())
-        self.assertIn(am, models.storage.all().values())
-        self.assertIn("Review." + rv.id, models.storage.all().keys())
-        self.assertIn(rv, models.storage.all().values())
-
-    def test_new_with_args(self):
-        with self.assertRaises(TypeError):
-            models.storage.new(BaseModel(), 1)
-
-    def test_new_with_None(self):
-        with self.assertRaises(AttributeError):
-            models.storage.new(None)
-
-    def test_save(self):
-        bm = BaseModel()
-        us = User()
-        st = State()
-        pl = Place()
-        cy = City()
-        am = Amenity()
-        rv = Review()
-        models.storage.new(bm)
-        models.storage.new(us)
-        models.storage.new(st)
-        models.storage.new(pl)
-        models.storage.new(cy)
-        models.storage.new(am)
-        models.storage.new(rv)
-        models.storage.save()
-        save_text = ""
-        with open("file.json", "r") as f:
-            save_text = f.read()
-            self.assertIn("BaseModel." + bm.id, save_text)
-            self.assertIn("User." + us.id, save_text)
-            self.assertIn("State." + st.id, save_text)
-            self.assertIn("Place." + pl.id, save_text)
-            self.assertIn("City." + cy.id, save_text)
-            self.assertIn("Amenity." + am.id, save_text)
-            self.assertIn("Review." + rv.id, save_text)
-
-    def test_save_with_arg(self):
-        with self.assertRaises(TypeError):
-            models.storage.save(None)
+        """Test new works"""
+        model = BaseModel()
+        length = len(self.objects)
+        models.storage.new(model)
+        self.assertTrue(length == len(self.objects))
 
     def test_reload(self):
-        bm = BaseModel()
-        us = User()
-        st = State()
-        pl = Place()
-        cy = City()
-        am = Amenity()
-        rv = Review()
-        models.storage.new(bm)
-        models.storage.new(us)
-        models.storage.new(st)
-        models.storage.new(pl)
-        models.storage.new(cy)
-        models.storage.new(am)
-        models.storage.new(rv)
-        models.storage.save()
-        models.storage.reload()
-        objs = FileStorage._FileStorage__objects
-        self.assertIn("BaseModel." + bm.id, objs)
-        self.assertIn("User." + us.id, objs)
-        self.assertIn("State." + st.id, objs)
-        self.assertIn("Place." + pl.id, objs)
-        self.assertIn("City." + cy.id, objs)
-        self.assertIn("Amenity." + am.id, objs)
-        self.assertIn("Review." + rv.id, objs)
+        """Test reload reloads the object"""
+        self.assertTrue(isinstance(self.objects, dict))
 
-    def test_reload_with_arg(self):
-        with self.assertRaises(TypeError):
-            models.storage.reload(None)
+    def test_all(self):
+        """Test reload reloads the object"""
+        self.assertTrue(isinstance(self.objects, dict))
+
+class TestBaseModelFileStorage(unittest.TestCase):
+    """Test BaseModel file storage"""
+    def setUp(self):
+        """
+        Instantiate new BaseModel object and store private
+        attributes into more readable attribute names
+        """
+        self.objects = FileStorage._FileStorage__objects
+        self.file_path = FileStorage._FileStorage__file_path
+        self.b1 = BaseModel()
+        self.b1.save()
+
+    def test_basemodel_object_update(self):
+        """Test whether new BaseModel objects get added to __objects"""
+        self.assertIn('BaseModel.{}'.format(self.b1.id), self.objects.keys())
+
+    def test_basemodel_dict(self):
+        """Test if new BaseModel objects' dicts get added to __objects"""
+        b1_dict = self.b1.to_dict()
+        self.assertIn(b1_dict, self.objects.values())
 
 
-if __name__ == "__main__":
-    unittest.main()
+class TestUserFileStorage(unittest.TestCase):
+    """Test User file storage"""
+    def setUp(self):
+        """
+        Instantiate new User object and store private
+        attributes into more readable attribute names
+        """
+        self.objects = FileStorage._FileStorage__objects
+        self.file_path = FileStorage._FileStorage__file_path
+        self.u1 = User()
+        self.u1.save()
+
+    def test_user_object_update(self):
+        """Test whether new User objects get added to __objects"""
+        self.assertIn('User.{}'.format(self.u1.id), self.objects.keys())
+
+    def test_user_dict(self):
+        """Test whether new User objects' dicts get added to __objects"""
+        u1_dict = self.u1.to_dict()
+        self.assertIn(u1_dict, self.objects.values())
+
+
+class TestStateFileStorage(unittest.TestCase):
+    """Test State file storage"""
+    def setUp(self):
+        """
+        Instantiate new State object and store private
+        attributes into more readable attribute names
+        """
+        self.objects = FileStorage._FileStorage__objects
+        self.file_path = FileStorage._FileStorage__file_path
+        self.s1 = State()
+        self.s1.save()
+
+    def test_state_object_update(self):
+        """Test whether new State objects get added to __objects"""
+        self.assertIn('State.{}'.format(self.s1.id), self.objects.keys())
+
+    def test_state_dict(self):
+        """Test whether new State objects' dicts get added to __objects"""
+        s1_dict = self.s1.to_dict()
+        self.assertIn(s1_dict, self.objects.values())
+
+
+class TestCityFileStorage(unittest.TestCase):
+    """Test City file storage"""
+    def setUp(self):
+        """
+        Instantiate new City object and store private
+        attributes into more readable attribute names
+        """
+        self.objects = FileStorage._FileStorage__objects
+        self.file_path = FileStorage._FileStorage__file_path
+        self.c1 = City()
+        self.c1.save()
+
+    def test_city_object_update(self):
+        """Test whether new City objects get added to __objects"""
+        self.assertIn('City.{}'.format(self.c1.id), self.objects.keys())
+
+    def test_city_dict(self):
+        """Test whether new City objects' dicts get added to __objects"""
+        c1_dict = self.c1.to_dict()
+        self.assertIn(c1_dict, self.objects.values())
+
+
+class TestAmenityFileStorage(unittest.TestCase):
+    """Test Amenity file storage"""
+    def setUp(self):
+        """
+        Instantiate new Amenity object and store private
+        attributes into more readable attribute names
+        """
+        self.objects = FileStorage._FileStorage__objects
+        self.file_path = FileStorage._FileStorage__file_path
+        self.a1 = Amenity()
+        self.a1.save()
+
+    def test_amenity_object_update(self):
+        """Test whether new Amenity objects get added to __objects"""
+        self.assertIn('Amenity.{}'.format(self.a1.id), self.objects.keys())
+
+    def test_amenity_dict(self):
+        """Test whjether new Amenity objects' dicts get added to __objects"""
+        a1_dict = self.a1.to_dict()
+        self.assertIn(a1_dict, self.objects.values())
+
+
+class TestPlaceFileStorage(unittest.TestCase):
+    """Test Place file storage"""
+    def setUp(self):
+        """
+        Instantiate new Place object and store private
+        attributes into more readable attribute names
+        """
+        self.objects = FileStorage._FileStorage__objects
+        self.file_path = FileStorage._FileStorage__file_path
+        self.p1 = Place()
+        self.p1.save()
+
+    def test_place_object_update(self):
+        """Test whether new Place objects get added to __objects"""
+        self.assertIn('Place.{}'.format(self.p1.id), self.objects.keys())
+
+    def test_place_dict(self):
+        """Test whether new Place objects' dicts get added to __objects"""
+        p1_dict = self.p1.to_dict()
+        self.assertIn(p1_dict, self.objects.values())
+
+
+class TestReviewFileStorage(unittest.TestCase):
+    """Test Review file storage"""
+    def setUp(self):
+        """
+        Instantiate new Review object and store private
+        attributes into more readable attribute names
+        """
+        self.objects = FileStorage._FileStorage__objects
+        self.file_path = FileStorage._FileStorage__file_path
+        self.r1 = Review()
+        self.r1.save()
+
+    def test_review_object_update(self):
+        """Test whether new Review objects get added to __objects"""
+        self.assertIn('Review.{}'.format(self.r1.id), self.objects.keys())
+
+    def test_review_dict(self):
+        """Test whether new Review objects' dicts get added to __objects"""
+        r1_dict = self.r1.to_dict()
+        self.assertIn(r1_dict, self.objects.values())
