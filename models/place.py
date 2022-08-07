@@ -1,31 +1,26 @@
 #!/usr/bin/python3
-# -*- coding: utf-8 -*-
-"""Place Module
-
-This Module inherits from BaseModel class.
-Place Module contains the attributes to be assigned
-to the Places created.
 """
-
+This module has one class: Place
+inherited from BaseModel
+"""
 from models.base_model import BaseModel
 
 
 class Place(BaseModel):
-    """Place Class
+    """Place class:
 
     Attributes:
-        city_id (str): The UUID of the City the Place is located in
-        user_id (str): The UUID of the User of the Place
-        name (str): The Place name
-        description (str): The Place description
-        number_rooms (int): The number of rooms in the Place
-        number_bathrooms (int): The number of bathrooms in the Place
-        max_guest (int): The maximum number of guests for the Place
-        price_by_night (int): The price per night
-        latitude (float): The latitude of the Place
-        longitude (float): The longitude of the Place
-        amenity_ids (list): A list that contains all the Amenities in the Place
-
+        city_id: str, City.id
+        user_id: str, User.id
+        name: str, place name
+        description: str, description of place
+        number_rooms: int, number of rooms
+        number_bathrooms: int, number of bathrooms
+        max_guest: int, max number of guests
+        price_by_night: int, price per night
+        latitude: float, latitude of place
+        longitude: float, longitude of place
+        amenity_ids: list of strs, list of Amenity.id
     """
     city_id = ''
     user_id = ''
@@ -38,4 +33,3 @@ class Place(BaseModel):
     latitude = 0.0
     longitude = 0.0
     amenity_ids = []
-    
