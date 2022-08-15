@@ -1,82 +1,102 @@
 #!/usr/bin/python3
+"""Unittest for class Review
 """
-    Test Case For Review Model and its Test
-"""
-from models import BaseModel
-from models import Review
 import unittest
-import inspect
-import time
 from datetime import datetime
-import pep8 as pcs
-from unittest import mock
-import models
+from models.base_model import BaseModel
+from models.review import Review
 
 
 class TestReview(unittest.TestCase):
-    """
-        unitesst for Review class
-    """
-    def issub_class(self):
+    """Testing Review"""
+    def setUp(self):
         """
-            test if Review class is sub class of base model
+        Create a new instance of Review before each test
         """
-        review = Review()
-        self.assertIsInstance(review, BaseModel)
-        self.assertTrue(hasattr(review, "id"))
-        self.assertTrue(hasattr(review, "created_at"))
-        self.assertTrue(hasattr(review, "update_at"))
+        self.r1 = Review()
 
-    def test_place_id_attr(self):
+    def tearDown(self):
         """
-            test for class attribute
+        Delete Review instance before next test
         """
-        review = Review()
-        self.assertTrue(hasattr(review, "place_id"))
-        self.assertEqual(review.place_id, "")
+        del self.r1
 
-    def test_user_id_attr(self):
+    def test_uniqueUUID(self):
         """
-            test for class attribute
+        Make sure each UUID is unique
         """
-        review = Review()
-        self.assertTrue(hasattr(review, "user_id"))
-        self.assertEqual(review.user_id, "")
+        r2 = Review()
+        self.assertNotEqual(self.r1.id, r2.id)
 
-    def test_text_attr(self):
+    def test_id_type(self):
         """
-            test for class attribute
+        Make sure id is a string not uuid data type
         """
-        review = Review()
-        self.assertTrue(hasattr(review, "text"))
-        self.assertEqual(review.text, "")
+        self.assertEqual(type(self.r1.id), str)
 
-    def test_to_dictReview(self):
+    def test_created_at_type(self):
         """
-            test to dict method with Review and the type
-            and content
+        Make sure created_at is datetime data type
         """
-        review = Review()
-        dict_cont = review.to_dict()
-        self.assertEqual(type(dict_cont), dict)
-        for attr in review.__dict__:
-            self.assertTrue(attr in dict_cont)
-            self.assertTrue("__class__" in dict_cont)
+        self.assertEqual(type(self.r1.created_at), datetime)
 
-    def test_dict_value(self):
+    def test_updated_at_type(self):
         """
-            test the returned dictionar values
+        Make sure updated_at is datetime data type
         """
-        time_format = "%Y-%m-%dT%H:%M:%S.%f"
-        review = Review()
-        dict_con = review.to_dict()
-        self.assertEqual(dict_con["__class__"], "Review")
-        self.assertEqual(type(dict_con["created_at"]), str)
-        self.assertEqual(type(dict_con["updated_at"]), str)
-        self.assertEqual(
-                            dict_con["created_at"],
-                            review.created_at.strftime(time_format)
-                                        )
-        self.assertEqual(
-                            dict_con["updated_at"],
-                            review.updated_at.strftime(time_format))
+        self.assertEqual(type(self.r1.updated_at), datetime)
+
+    def test_place_id(self):
+        """
+        Make sure place_id is str data type
+        """
+        self.assertEqual(type(Review.place_id), str)
+
+    def test_user_id(self):
+        """
+        Make sure user_id is str data type
+        """
+        self.assertEqual(type(Review.user_id), str)
+
+    def test_text(self):
+        """
+        Make sure text is str data type
+        """
+        self.assertEqual(type(Review.text), str)
+
+    def test_save(self):
+        """
+        Make sure save does update the updated_at attribute
+        """
+        old_updated_at = self.r1.updated_at
+        self.r1.save()
+        self.assertNotEqual(old_updated_at, self.r1.updated_at)
+
+    def test_str(self):
+        """
+        Testing return of __str__
+        """
+        self.assertEqual(str(self.r1), "[Review] ({}) {}".
+                         format(self.r1.id, self.r1.__dict__))
+
+    def test_to_dict(self):
+        """
+        Make sure to_dict returns the right dictionary
+        and the dict has the right attributes with the right types.
+        """
+        model_json = self.r1.to_dict()
+        self.assertEqual(type(model_json), dict)
+        self.assertTrue(hasattr(model_json, '__class__'))
+        self.assertEqual(type(model_json['created_at']), str)
+        self.assertEqual(type(model_json['updated_at']), str)
+
+    def test_kwargs(self):
+        """
+        Test passing kwargs to Review instantation
+        """
+        json_dict = self.r1.to_dict()
+        r2 = Review(**json_dict)
+        self.assertEqual(self.r1.id, r2.id)
+        self.assertEqual(self.r1.created_at, r2.created_at)
+        self.assertEqual(self.r1.updated_at, r2.updated_at)
+        self.assertNotEqual(self.r1, r2)

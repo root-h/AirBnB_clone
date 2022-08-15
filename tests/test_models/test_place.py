@@ -1,153 +1,150 @@
 #!/usr/bin/python3
+"""Unittest for class Place
 """
-    Test Case For Place Model and its Test
-"""
-from models import BaseModel
-from models import Place
 import unittest
-import inspect
-import time
 from datetime import datetime
-import pep8 as pcs
-from unittest import mock
-import models
+from models.base_model import BaseModel
+from models.place import Place
 
 
 class TestPlace(unittest.TestCase):
-    """
-        unitesst for Place class
-    """
-    def issub_class(self):
+    """Testing Place"""
+    def setUp(self):
         """
-            test if Place class is sub class of base model
+        Create a new instance of Place before each test
         """
-        place = Place()
-        self.assertIsInstance(place, BaseModel)
-        self.assertTrue(hasattr(place, "id"))
-        self.assertTrue(hasattr(place, "created_at"))
-        self.assertTrue(hasattr(place, "update_at"))
+        self.p1 = Place()
 
-    def test_city_id_attr(self):
+    def tearDown(self):
         """
-            Test Class attribute
+        Delete Place instance before next test
         """
-        place = Place()
-        self.assertTrue(hasattr(place, "city_id"))
-        self.assertEqual(place.city_id, "")
+        del self.p1
 
-    def test_user_id_attr(self):
+    def test_uniqueUUID(self):
         """
-            Test Class attribute
+        Make sure each UUID is unique
         """
-        place = Place()
-        self.assertTrue(hasattr(place, "user_id"))
-        self.assertEqual(place.user_id, "")
+        p2 = Place()
+        self.assertNotEqual(self.p1.id, p2.id)
 
-    def test_name_attr(self):
+    def test_id_type(self):
         """
-            Test Class attribute
+        Make sure id is a string not uuid data type
         """
-        place = Place()
-        self.assertTrue(hasattr(place, "name"))
-        self.assertEqual(place.name, "")
+        self.assertEqual(type(self.p1.id), str)
 
-    def test_description_attr(self):
+    def test_created_at_type(self):
         """
-            Test Class attribute
+        Make sure created_at is datetime data type
         """
-        place = Place()
-        self.assertTrue(hasattr(place, "description"))
-        self.assertEqual(place.description, "")
+        self.assertEqual(type(self.p1.created_at), datetime)
 
-    def test_number_rooms_attr(self):
+    def test_updated_at_type(self):
         """
-            Test Class attribute
+        Make sure updated_at is datetime data type
         """
-        place = Place()
-        self.assertTrue(hasattr(place, "number_rooms"))
-        self.assertEqual(type(place.number_rooms), int)
-        self.assertEqual(place.number_rooms, 0)
+        self.assertEqual(type(self.p1.updated_at), datetime)
 
-    def test_number_bathrooms_attr(self):
+    def test_name_type(self):
         """
-            Test Class attribute
+        Make sure name is str data type
         """
-        place = Place()
-        self.assertTrue(hasattr(place, "number_bathrooms"))
-        self.assertEqual(type(place.number_bathrooms), int)
-        self.assertEqual(place.number_bathrooms, 0)
+        self.assertEqual(type(Place.name), str)
 
-    def test_max_guest_attr(self):
+    def test_city_id(self):
         """
-            Test Class attribute
+        Make sure city_id is str data type
         """
-        place = Place()
-        self.assertTrue(hasattr(place, "max_guest"))
-        self.assertEqual(type(place.max_guest), int)
-        self.assertEqual(place.max_guest, 0)
+        self.assertEqual(type(Place.city_id), str)
 
-    def test_price_by_night_attr(self):
+    def test_user_id(self):
         """
-            Test Class attribute
+        Make sure user_id is str data type
         """
-        place = Place()
-        self.assertTrue(hasattr(place, "price_by_night"))
-        self.assertEqual(type(place.price_by_night), int)
-        self.assertEqual(place.price_by_night, 0)
+        self.assertEqual(type(Place.user_id), str)
 
-    def test_latitude_attr(self):
+    def test_description(self):
         """
-            Test Class attribute
+        Make sure description is str data type
         """
-        place = Place()
-        self.assertTrue(hasattr(place, "latitude"))
-        self.assertEqual(type(place.latitude), float)
-        self.assertEqual(place.latitude, 0.0)
+        self.assertEqual(type(Place.description), str)
 
-    def test_latitude_attr(self):
+    def test_number_rooms(self):
         """
-            Test Class attribute
+        Make sure number_rooms is int data type
         """
-        place = Place()
-        self.assertTrue(hasattr(place, "longitude"))
-        self.assertEqual(type(place.longitude), float)
-        self.assertEqual(place.longitude, 0.0)
+        self.assertEqual(type(Place.number_rooms), int)
 
-    def test_amenity_ids_attr(self):
+    def test_number_bathrooms(self):
         """
-            Test Class attribute
+        Make sure number_bathrooms is int data type
         """
-        place = Place()
-        self.assertTrue(hasattr(place, "amenity_ids"))
-        self.assertEqual(type(place.amenity_ids), list)
-        self.assertEqual(len(place.amenity_ids), 0)
+        self.assertEqual(type(Place.number_bathrooms), int)
 
-    def test_to_dictPlace(self):
+    def test_max_guest(self):
         """
-            test to dict method with Place and the type
-            and content
+        Make sure max_guest is int data type
         """
-        place = Place()
-        dict_cont = place.to_dict()
-        self.assertEqual(type(dict_cont), dict)
-        for attr in place.__dict__:
-            self.assertTrue(attr in dict_cont)
-            self.assertTrue("__class__" in dict_cont)
+        self.assertEqual(type(Place.max_guest), int)
 
-    def test_dict_value(self):
+    def test_price_by_night(self):
         """
-            test the returned dictionar values
+        Make sure price_by_night is int data type
         """
-        time_format = "%Y-%m-%dT%H:%M:%S.%f"
-        place = Place()
-        dict_con = place.to_dict()
-        self.assertEqual(dict_con["__class__"], "Place")
-        self.assertEqual(type(dict_con["created_at"]), str)
-        self.assertEqual(type(dict_con["updated_at"]), str)
-        self.assertEqual(
-                            dict_con["created_at"],
-                            place.created_at.strftime(time_format)
-                                        )
-        self.assertEqual(
-                            dict_con["updated_at"],
-                            place.updated_at.strftime(time_format))
+        self.assertEqual(type(Place.price_by_night), int)
+
+    def test_latitutde(self):
+        """
+        Make sure latitude is float
+        """
+        self.assertEqual(type(Place.latitude), float)
+
+    def test_longitude(self):
+        """
+        Make sure longitude is float
+        """
+        self.assertEqual(type(Place.longitude), float)
+
+    def test_amenity_ids(self):
+        """
+        Make sure amenity_ids is a list
+        """
+        self.assertEqual(type(Place.amenity_ids), list)
+
+    def test_save(self):
+        """
+        Make sure save does update the updated_at attribute
+        """
+        old_updated_at = self.p1.updated_at
+        self.p1.save()
+        self.assertNotEqual(old_updated_at, self.p1.updated_at)
+
+    def test_str(self):
+        """
+        Testing return of __str__
+        """
+        self.assertEqual(str(self.p1), "[Place] ({}) {}".
+                         format(self.p1.id, self.p1.__dict__))
+
+    def test_to_dict(self):
+        """
+        Make sure to_dict returns the right dictionary
+        and the dict has the right attributes with the right types.
+        """
+        model_json = self.p1.to_dict()
+        self.assertEqual(type(model_json), dict)
+        self.assertTrue(hasattr(model_json, '__class__'))
+        self.assertEqual(type(model_json['created_at']), str)
+        self.assertEqual(type(model_json['updated_at']), str)
+
+    def test_kwargs(self):
+        """
+        Test passing kwargs to Place instantation
+        """
+        json_dict = self.p1.to_dict()
+        p2 = Place(**json_dict)
+        self.assertEqual(self.p1.id, p2.id)
+        self.assertEqual(self.p1.created_at, p2.created_at)
+        self.assertEqual(self.p1.updated_at, p2.updated_at)
+        self.assertNotEqual(self.p1, p2)

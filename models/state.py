@@ -1,15 +1,9 @@
 #!/usr/bin/python3
-"""
-This module has one class: State
-inherited from BaseModel
-"""
+"""Module for State class."""
+
 from models.base_model import BaseModel
 
 
 class State(BaseModel):
-    """State class:
-
-    Attributes:
-        name: str, state name
-    """
-    name = ''
+    """Class representing a State."""
+    name = ""

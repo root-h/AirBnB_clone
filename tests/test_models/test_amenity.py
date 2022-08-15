@@ -1,66 +1,90 @@
 #!/usr/bin/python3
+"""Unittest for class Amenity
 """
-    Test Case For Amenity Model and its Test
-"""
-from models import BaseModel
-from models import Amenity
 import unittest
-import inspect
-import time
 from datetime import datetime
-import pep8 as pcs
-from unittest import mock
-import models
+from models.base_model import BaseModel
+from models.amenity import Amenity
 
 
 class TestAmenity(unittest.TestCase):
-    """
-        unitesst for user class
-    """
-    def issub_class(self):
+    """Testing Amenity"""
+    def setUp(self):
         """
-            test if Amenity class is sub class of base model
+        Create a new instance of Amenity before each test
         """
-        insta = Amenity()
-        self.assertIsInstance(insta, BaseModel)
-        self.assertTrue(hasattr(insta, "id"))
-        self.assertTrue(hasattr(insta, "created_at"))
-        self.assertTrue(hasattr(insta, "update_at"))
+        self.a1 = Amenity()
 
-    def test_name(self):
+    def tearDown(self):
         """
-            test class atribute name
+        Delete Amenity instance before next test
         """
-        insta = Amenity()
-        self.assertTrue(hasattr(insta, "name"))
-        self.assertEqual(insta.name, "")
+        del self.a1
 
-    def test_to_dictAmenity(self):
+    def test_uniqueUUID(self):
         """
-            test to dict method with Amenity and the type
-            and content
+        Make sure each UUID is unique
         """
-        insta = Amenity()
-        dict_cont = insta.to_dict()
-        self.assertEqual(type(dict_cont), dict)
-        for attr in insta.__dict__:
-            self.assertTrue(attr in dict_cont)
-            self.assertTrue("__class__" in dict_cont)
+        a2 = Amenity()
+        self.assertNotEqual(self.a1.id, a2.id)
 
-    def test_dict_value(self):
+    def test_id_type(self):
         """
-            test the returned dictionar values
+        Make sure id is a string not uuid data type
         """
-        time_format = "%Y-%m-%dT%H:%M:%S.%f"
-        insta = Amenity()
-        dict_con = insta.to_dict()
-        self.assertEqual(dict_con["__class__"], "Amenity")
-        self.assertEqual(type(dict_con["created_at"]), str)
-        self.assertEqual(type(dict_con["updated_at"]), str)
-        self.assertEqual(
-                            dict_con["created_at"],
-                            insta.created_at.strftime(time_format)
-                                        )
-        self.assertEqual(
-                            dict_con["updated_at"],
-                            insta.updated_at.strftime(time_format))
+        self.assertEqual(type(self.a1.id), str)
+
+    def test_created_at_type(self):
+        """
+        Make sure created_at is datetime data type
+        """
+        self.assertEqual(type(self.a1.created_at), datetime)
+
+    def test_updated_at_type(self):
+        """
+        Make sure updated_at is datetime data type
+        """
+        self.assertEqual(type(self.a1.updated_at), datetime)
+
+    def test_name_type(self):
+        """
+        Make sure name is str data type
+        """
+        self.assertEqual(type(Amenity.name), str)
+
+    def test_save(self):
+        """
+        Make sure save does update the updated_at attribute
+        """
+        old_updated_at = self.a1.updated_at
+        self.a1.save()
+        self.assertNotEqual(old_updated_at, self.a1.updated_at)
+
+    def test_str(self):
+        """
+        Testing return of __str__
+        """
+        self.assertEqual(str(self.a1), "[Amenity] ({}) {}".
+                         format(self.a1.id, self.a1.__dict__))
+
+    def test_to_dict(self):
+        """
+        Make sure to_dict returns the right dictionary
+        and the dict has the right attributes with the right types.
+        """
+        model_json = self.a1.to_dict()
+        self.assertEqual(type(model_json), dict)
+        self.assertTrue(hasattr(model_json, '__class__'))
+        self.assertEqual(type(model_json['created_at']), str)
+        self.assertEqual(type(model_json['updated_at']), str)
+
+    def test_kwargs(self):
+        """
+        Test passing kwargs to Amenity instantation
+        """
+        json_dict = self.a1.to_dict()
+        a2 = Amenity(**json_dict)
+        self.assertEqual(self.a1.id, a2.id)
+        self.assertEqual(self.a1.created_at, a2.created_at)
+        self.assertEqual(self.a1.updated_at, a2.updated_at)
+        self.assertNotEqual(self.a1, a2)
