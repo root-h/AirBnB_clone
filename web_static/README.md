@@ -1,1 +1,1 @@
-## Web Static project 
+## Web Static
